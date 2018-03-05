@@ -5,9 +5,18 @@
 # This classifier uses a data set of 15497 feature vectors, each with 335 features.
 # Each instance is a representation of an email, where feature 0 is the classification(spam or non-spam)
 # The remaining 334 features represent specific qualities of the email in question.
-# The user is prompted to enter their preferred test size percentage as a decimal
-# This percent of the data set goes into a training set and the remaining percent into the validation set
-# The Perceptron is set to train until it's prediction accuracy reaches 98 percent or 1000 epochs.
+#
+# Inputs:
+
+# The user is prompted to enter a preffered test set size out of 15497 records.
+# The proper proportion of the spam/non-spam records will be admitted into the training nad validation sets
+#
+# Outputs:
+#
+# The program provides sizes for the validation and training set after prompting for training set size
+# The amount of correctly classified email samples
+# The accuracy of the classification.
+
 import numpy as np
 import math, random
 
@@ -32,24 +41,21 @@ class NB:
                 self.spam.append(array1)
             elif(array1[1] == '-1'):
                 self.non_spam.append(array1)
-        print(len(self.spam)+len(self.non_spam))
-        random.shuffle(self.spam)
+        random.shuffle(self.spam)               #records are shuffled to show importance of record/feature representation in our training set.
         random.shuffle(self.non_spam)
 
     def Set_Size(self):
-        while(self.percent <= 0 or self.percent >= 1):
-            self.percent = float(input("What percentage of the data set would you like to test: "))
+        data_size = int(input("How many elements do you want in training set?\n"))
+        spam_size = int(data_size*(float(len(self.spam)/(len(self.non_spam)+len(self.spam)))))
+        non_spam_size = int(data_size*(float(len(self.non_spam)/(len(self.non_spam)+len(self.spam)))))
 
-        length1 = math.floor(self.percent*len(self.spam))
-        length2 = math.floor(self.percent*len(self.non_spam))
-
-        self.training = (self.spam[:length1])
-        self.training.extend(self.non_spam[:length2])
-        self.validation = (self.spam[length1:])
-        self.validation.extend(self.non_spam[length2:])
+        self.training = (self.spam[:spam_size])
+        self.training.extend(self.non_spam[:non_spam_size])
+        self.validation = (self.spam[spam_size:])
+        self.validation.extend(self.non_spam[non_spam_size:])
 
     def probability(self):
-        length = (len(self.training[2][2]))
+        length = (len(self.training[0][2]))
         count1 = np.zeros(length)
         count2 = np.zeros(length)
 
@@ -74,9 +80,9 @@ class NB:
                 correct += 1
 
         percentage = 100*correct/float(len(self.validation))
-        print("Correct:", correct)
-        print("Validation size:", len(self.validation))
-        print("Test size:", len(self.training))
+        print("Validation Size:", len(self.validation))
+        print("Training Size:", len(self.training))
+        print("Correct:", correct, "of", len(self.validation))
         print("Prediction Percentage: %.2f" % (percentage))
 
     def out(self):
